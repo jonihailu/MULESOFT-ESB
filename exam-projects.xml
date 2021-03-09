@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3d7cc0ba-b9a8-4648-9457-096a46a10747" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="21f14315-817d-4d0d-af69-6638ecfaf923" />
+	<flow name="IsNotNull" doc:id="94e0b238-6d45-4c97-8478-aafe85e2e8c0" >
+		<http:listener doc:name="Listener" doc:id="627b4c8a-f550-4213-9eb3-e9e4ecb2993e" config-ref="HTTP_Listener_config" path="/isnotnull"/>
+		<set-payload value="#[null]" doc:name="Set Payload" doc:id="dc44b470-82a8-4c86-aae6-2cfe199d0c0d" />
+		<validation:is-not-null doc:name="Is not null" doc:id="01b2cf1a-1eb8-457f-8f22-2985e058526e" value="#[payload]" message='" The payload is null !"' config-ref="Validation_Config"/>
+	</flow>
+	<flow name="Write-file" doc:id="8d597d5c-dc82-4742-8ecf-78b387c02bc4" >
+		<http:listener doc:name="Listener" doc:id="cb96d206-5a10-4ba8-ab48-6eecfde13a5b" config-ref="HTTP_Listener_config" path="/write" />
+		<set-payload value='#[[&#10;	{&#10;   "id": 10,&#10;   "Fname": "Michael",&#10;   "Lname": "Sisay"&#10;},&#10;{&#10;   "id": 11,&#10;   "Fname": "Daniael",&#10;   "Lname": "Biniyam"&#10;},&#10;{&#10;   "id": 12,&#10;   "Fname": "Mulugeta",&#10;   "Lname": "Endale"&#10;}&#10;]]' doc:name="Set Payload" doc:id="339fec3b-07d2-4a4f-bdf9-e7996ee1f4c7" />
+		<foreach doc:name="For Each" doc:id="9b157035-361f-4bdd-bd7b-1889a7533a05" batchSize="2">
+			<file:write doc:name="data/account" doc:id="500abc97-e638-4070-9d96-f963f19340e3" path='#["data/account-" ++ random()]'/>
+		</foreach>
+	</flow>
+</mule>

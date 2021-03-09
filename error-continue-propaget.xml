@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	
+	<flow name="Main" doc:id="05b0d2be-fe26-48ce-b005-9271636bcb78" >
+		<http:listener doc:name="Listener" doc:id="3f9e987f-12ac-402d-a1fe-8a0baa287055" config-ref="HTTP_Listener_config" path="/errorhandle"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ddfd4b3f-e927-4500-a70e-60aa5bf7b536" name="private"/>
+		<set-payload value='#["Success - main flow"]' doc:name="Success - main flow" doc:id="b5e440b8-427c-40dd-837a-6115eb881e37" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1f166dcd-9ad3-4881-abee-930886cbc27b" type="ANY">
+				<set-payload value='#["Error - main flow"]' doc:name="Error - main flow" doc:id="c7b1b01a-8ced-4144-a294-509ac2535fde" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="private" doc:id="1123bd64-de31-4860-9ed2-8bb75e6a181d" >
+		<set-payload value='#["success - main flow"]' doc:name="success - main flow" doc:id="481b066d-bc8d-4df9-a8fb-e023d99927ce" />
+		<validation:is-number numberType="INTEGER" doc:name="Is number" doc:id="94443b34-fec2-453f-bf02-66a518520baf" value="#[payload]" message='"Validate - payload is an Integer"'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="42ee6c46-6657-4193-ac47-3c6dd7e7b0d6" >
+				<set-payload value='#["Error - private flow"]' doc:name="Error - private flow" doc:id="74de0a6d-a831-4492-a115-5cf3099816aa" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
